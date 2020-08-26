@@ -10,8 +10,8 @@ def crud_error_handler(blueprint, app):
                 'success': False,
                 'error': {
                     'type': error.__class__.__name__,
-                    'message': error.description
-                }
+                    'message': error.description,
+                },
             }
 
             return jsonify(response), status_code
@@ -20,8 +20,8 @@ def crud_error_handler(blueprint, app):
                 'success': False,
                 'error': {
                     'type': error.__class__.__name__,
-                    'message': error.args[0]
-                }
+                    'message': error.args[0],
+                },
             }
             return jsonify(response), 500
 
