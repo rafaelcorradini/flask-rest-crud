@@ -1,6 +1,15 @@
-from flask import request, Response
-import json
+from flask import request, Response, jsonify
 from mongoengine import ReferenceField
+import json
+
+
+def check_route_permission(func):
+    def wrapper(*args):
+        if func.__name__ not in args[0].roles:
+            return jsonify(error=f'{args[0].name} {func.__name__} is forbidden')
+        else:
+            return func(*args)
+    return wrapper
 
 
 class Crud:
@@ -9,14 +18,17 @@ class Crud:
         self.model = model
         self.name = name
         self.prefix = prefix
+        self.roles = ['list', 'find', 'create', 'update', 'delete']
         self.create_routes()
 
     def create_routes(self):
         self.app.add_url_rule(f'{self.prefix}/{self.name}', f'${self.name}_list', self.list, methods=['GET'])
         self.app.add_url_rule(f'{self.prefix}/{self.name}', f'${self.name}_create', self.create, methods=['POST'])
+        self.app.add_url_rule(f'{self.prefix}/{self.name}/<model_id>', f'${self.name}_find', self.find, methods=['GET'])
         self.app.add_url_rule(f'{self.prefix}/{self.name}/<model_id>', f'${self.name}_update', self.update, methods=['PUT'])
         self.app.add_url_rule(f'{self.prefix}/{self.name}/<model_id>', f'${self.name}_delete', self.delete, methods=['DELETE'])
 
+    @check_route_permission
     def create(self):
         data = request.get_json()
         model = self.model()
@@ -36,6 +48,7 @@ class Crud:
         model.save()
         return model.to_json()
 
+    @check_route_permission
     def update(self, model_id):
         data = request.get_json()
         model = self.model.objects.get(id=model_id)
@@ -45,15 +58,21 @@ class Crud:
         model.save()
         return model.to_json()
 
+    @check_route_permission
     def find(self, model_id):
         model = self.model.objects.get(id=model_id)
         return model.to_json()
 
+    @check_route_permission
     def delete(self, model_id):
+        if 'delete' not in self.roles:
+            return jsonify(error=f'{self.name} list is forbidden'), 403
+
         model = self.model.objects.get(id=model_id)
         model.delete()
         return model.to_json()
 
+    @check_route_permission
     def list(self):
         count = self.model.objects.count()
         start = 0

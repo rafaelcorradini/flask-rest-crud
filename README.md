@@ -22,14 +22,13 @@ class Category(db.Document):
     name = db.StringField(required=True)
     description = db.StringField()
 
-Crud(app, Category, 'categories', '/api/')
+Crud(app, Category, 'categories')
 ```
 
 ## Example
 
 ```python
 from flask import Flask
-
 from project.crud import Crud
 from project.models.category import Category
 from flask_mongoengine import MongoEngine
@@ -72,13 +71,13 @@ This code will generate the following API endpoints:
 
 | Method             | API calls                                                                                  |
 | ------------------ | ---------------------------------------------------------------------------------------    |
-| `getList`          | `GET http://my.api.url/products?sort=["name","ASC"]&range=[0, 24]&filter={"name":"bar"}`   |
-| `getOne`           | `GET http://my.api.url/products/123`                                                       |
-| `getMany`          | `GET http://my.api.url/products?filter={"id":[123,456,789]}`                               |
-| `getManyReference` | `GET http://my.api.url/products?filter={"category_id":345}`                                |
-| `create`           | `POST http://my.api.url/products`                                                          |
-| `update`           | `PUT http://my.api.url/products/123`                                                       |
-| `delete`           | `DELETE http://my.api.url/products/123`                                                    |
+| `getList`          | `GET http://my.api.url/api/products?sort=["name","ASC"]&range=[0, 24]&filter={"name":"bar"}`   |
+| `getOne`           | `GET http://my.api.url/api/products/123`                                                       |
+| `getMany`          | `GET http://my.api.url/api/products?filter={"id":[123,456,789]}`                               |
+| `getManyReference` | `GET http://my.api.url/api/products?filter={"category_id":345}`                                |
+| `create`           | `POST http://my.api.url/api/products`                                                          |
+| `update`           | `PUT http://my.api.url/api/products/123`                                                       |
+| `delete`           | `DELETE http://my.api.url/api/products/123`                                                    |
 
 
 

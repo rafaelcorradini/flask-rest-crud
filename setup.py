@@ -8,7 +8,7 @@ setup(
   description='Generate full CRUD from mongoengine models',   
   author='Rafael Corradini da Cunha',                   
   author_email='rafacunhadini@gmail.com',      
-  url='https://github.com/user/rafaelcorradini/flask-rest-crud',   
+  url='https://github.com/rafaelcorradini/flask-rest-crud',   
   keywords=['flask', 'mongoengine', 'crud', 'rest'],   
   install_requires=[            
     'flask',
