@@ -1,14 +1,15 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
+
 setup(
-  name = 'flask-rest-crud',         
-  packages = ['flask-rest-crud'],   
-  version = '0.0.1',      
+  name='flask-rest-crud',         
+  packages=find_packages(),   
+  version='0.0.1',      
   license='MIT',        
-  description = 'Generate full CRUD from mongoengine models',   
-  author = 'Rafael Corradini da Cunha',                   
-  author_email = 'rafacunhadini@gmail.com',      
-  url = 'https://github.com/user/rafaelcorradini/flask-rest-crud',   
-  keywords = ['flask', 'mongoengine', 'crud', 'rest'],   
+  description='Generate full CRUD from mongoengine models',   
+  author='Rafael Corradini da Cunha',                   
+  author_email='rafacunhadini@gmail.com',      
+  url='https://github.com/user/rafaelcorradini/flask-rest-crud',   
+  keywords=['flask', 'mongoengine', 'crud', 'rest'],   
   install_requires=[            
     'flask',
     'mongoengine'

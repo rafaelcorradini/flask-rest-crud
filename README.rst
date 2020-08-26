@@ -14,6 +14,13 @@ pip install flask-rest-crud
 
 ```python
 from flask_rest_crud import Crud
+from flask_mongoengine import MongoEngine
+
+db = MongoEngine()
+
+class Category(db.Document):
+    name = db.StringField(required=True)
+    description = db.StringField()
 
 Crud(app, Category, 'categories', '/api/')
 ```
