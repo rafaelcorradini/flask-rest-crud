@@ -1,1 +1,1 @@
-from .crud import Crud
+from .crud import Crud, init_crud_error_handler

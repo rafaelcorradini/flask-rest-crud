@@ -4,13 +4,13 @@ import json
 
 
 def check_route_permission(func):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         if func.__name__ not in args[0].roles:
             return jsonify(
                 error=f'{args[0].name} {func.__name__} is forbidden'
             )
         else:
-            return func(*args)
+            return func(*args, **kwargs)
 
     return wrapper
 
@@ -83,7 +83,7 @@ class Crud:
     @check_route_permission
     def update(self, model_id):
         data = request.get_json()
-        model = self.model.objects.get(id=model_id)
+        model = self.model.objects.get_or_404(id=model_id)
         for field in self.model._fields:
             if field in data:
                 model[field] = data[field]
@@ -92,7 +92,7 @@ class Crud:
 
     @check_route_permission
     def find(self, model_id):
-        model = self.model.objects.get(id=model_id)
+        model = self.model.objects.get_or_404(id=model_id)
         return model.to_json()
 
     @check_route_permission

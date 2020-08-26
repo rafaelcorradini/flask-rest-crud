@@ -13,7 +13,7 @@ pip install flask-rest-crud
 ## Usage
 
 ```python
-from flask_rest_crud import Crud
+from flask_rest_crud import Crud, init_crud_error_handler
 from flask_mongoengine import MongoEngine
 
 db = MongoEngine()
@@ -23,6 +23,9 @@ class Category(db.Document):
     description = db.StringField()
 
 Crud(app, Category, 'categories')
+
+errors = Blueprint('errors', __name__)
+init_crud_error_handler(errors, app)
 ```
 
 ## Example
@@ -32,7 +35,7 @@ from flask import Flask
 from project.crud import Crud
 from project.models.category import Category
 from flask_mongoengine import MongoEngine
-from flask_rest_crud import Crud
+from flask_rest_crud import Crud, init_crud_error_handler
 
 db = MongoEngine()
 
@@ -54,6 +57,12 @@ app = Flask(__name__)
 # CRUDS
 Crud(app, Category, 'categories', '/api/')
 Crud(app, Product, 'products', '/api/')
+
+
+# Error handler
+
+errors = Blueprint('errors', __name__)
+init_crud_error_handler(errors, app)
 
 
 #  mongodb config
