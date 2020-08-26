@@ -12,3 +12,18 @@ requirements-dev:
 publish:
 	python setup.py sdist
 	twine upload dist/*
+
+black:
+	black flask_rest_crud -t py37 --line-length 79 --skip-string-normalization
+
+black-check:
+	black flask_rest_crud -t py37 --line-length 79 --skip-string-normalization --check
+
+flake8:
+	flake8 --show-source flask_rest_crud
+
+lint:
+    black flake8
+
+lint-check:
+    black-check flake8

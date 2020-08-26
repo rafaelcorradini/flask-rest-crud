@@ -6,9 +6,12 @@ import json
 def check_route_permission(func):
     def wrapper(*args):
         if func.__name__ not in args[0].roles:
-            return jsonify(error=f'{args[0].name} {func.__name__} is forbidden')
+            return jsonify(
+                error=f'{args[0].name} {func.__name__} is forbidden'
+            )
         else:
             return func(*args)
+
     return wrapper
 
 
@@ -22,11 +25,36 @@ class Crud:
         self.create_routes()
 
     def create_routes(self):
-        self.app.add_url_rule(f'{self.prefix}/{self.name}', f'${self.name}_list', self.list, methods=['GET'])
-        self.app.add_url_rule(f'{self.prefix}/{self.name}', f'${self.name}_create', self.create, methods=['POST'])
-        self.app.add_url_rule(f'{self.prefix}/{self.name}/<model_id>', f'${self.name}_find', self.find, methods=['GET'])
-        self.app.add_url_rule(f'{self.prefix}/{self.name}/<model_id>', f'${self.name}_update', self.update, methods=['PUT'])
-        self.app.add_url_rule(f'{self.prefix}/{self.name}/<model_id>', f'${self.name}_delete', self.delete, methods=['DELETE'])
+        self.app.add_url_rule(
+            f'{self.prefix}/{self.name}',
+            f'${self.name}_list',
+            self.list,
+            methods=['GET'],
+        )
+        self.app.add_url_rule(
+            f'{self.prefix}/{self.name}',
+            f'${self.name}_create',
+            self.create,
+            methods=['POST'],
+        )
+        self.app.add_url_rule(
+            f'{self.prefix}/{self.name}/<model_id>',
+            f'${self.name}_find',
+            self.find,
+            methods=['GET'],
+        )
+        self.app.add_url_rule(
+            f'{self.prefix}/{self.name}/<model_id>',
+            f'${self.name}_update',
+            self.update,
+            methods=['PUT'],
+        )
+        self.app.add_url_rule(
+            f'{self.prefix}/{self.name}/<model_id>',
+            f'${self.name}_delete',
+            self.delete,
+            methods=['DELETE'],
+        )
 
     @check_route_permission
     def create(self):
@@ -42,7 +70,11 @@ class Crud:
         for field, cls in self.model._fields.items():
             if field in normalized_data:
                 if isinstance(cls, ReferenceField):
-                    model[field] = self.model.category.document_type_obj.objects.get(id=normalized_data[field])
+                    model[
+                        field
+                    ] = self.model.category.document_type_obj.objects.get(
+                        id=normalized_data[field]
+                    )
                 else:
                     model[field] = normalized_data[field]
         model.save()
@@ -97,7 +129,11 @@ class Crud:
         if request.args.get('sort'):
             sort = json.loads(request.args.get('sort'))
             direction = '-' if sort[1] == 'DESC' else ''
-            items = items.skip(start).limit(end - start).order_by(f'{direction}{sort[0]}')
+            items = (
+                items.skip(start)
+                .limit(end - start)
+                .order_by(f'{direction}{sort[0]}')
+            )
         else:
             items = items.skip(start).limit(end - start)
 
