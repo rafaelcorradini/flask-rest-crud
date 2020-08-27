@@ -1,5 +1,6 @@
 from flask import request, Response, jsonify
 from mongoengine import ReferenceField
+import bson
 import json
 
 
@@ -13,6 +14,30 @@ def check_route_permission(func):
             return func(*args, **kwargs)
 
     return wrapper
+
+
+def deserialize_object_id_fields(obj):
+    for k, v in obj.items():
+        if isinstance(v, bson.objectid.ObjectId):
+            obj[k] = str(v)
+    return obj
+
+
+def normalize_list(query):
+    response = list(query.as_pymongo())
+    for key, value in enumerate(response):
+        response[key] = deserialize_object_id_fields(value)
+        response[key]['id'] = str(value['_id'])
+        del response[key]['_id']
+    return json.dumps(response)
+
+
+def normalize_item(query):
+    response = query.to_mongo().to_dict()
+    response['id'] = str(response['_id'])
+    response = deserialize_object_id_fields(response)
+    del response['_id']
+    return json.dumps(response)
 
 
 class Crud:
@@ -78,7 +103,7 @@ class Crud:
                 else:
                     model[field] = normalized_data[field]
         model.save()
-        return model.to_json()
+        return normalize_item(model)
 
     @check_route_permission
     def update(self, model_id):
@@ -88,21 +113,18 @@ class Crud:
             if field in data:
                 model[field] = data[field]
         model.save()
-        return model.to_json()
+        return normalize_item(model)
 
     @check_route_permission
     def find(self, model_id):
         model = self.model.objects.get_or_404(id=model_id)
-        return model.to_json()
+        return normalize_item(model)
 
     @check_route_permission
     def delete(self, model_id):
-        if 'delete' not in self.roles:
-            return jsonify(error=f'{self.name} list is forbidden'), 403
-
         model = self.model.objects.get(id=model_id)
         model.delete()
-        return model.to_json()
+        return normalize_item(model)
 
     @check_route_permission
     def list(self):
@@ -137,6 +159,7 @@ class Crud:
         else:
             items = items.skip(start).limit(end - start)
 
-        res = Response(items.to_json())
+        res = Response(normalize_list(items))
+        res.headers['Access-Control-Expose-Headers'] = 'Content-Range'
         res.headers['Content-Range'] = f'{self.name} {start}-{end}/{count}'
         return res

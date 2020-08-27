@@ -22,8 +22,6 @@ black-check:
 flake8:
 	flake8 --show-source flask_rest_crud
 
-lint:
-    black flake8
+lint: black flake8
 
-lint-check:
-    black-check flake8
+lint-check: black-check flake8
